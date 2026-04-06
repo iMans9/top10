@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي الـ 10 إجابات | الأخضر vs البرتقالي</title>
+    <style>
+        :root {
+            --green-color: #2ecc71;
+            --orange-color: #e67e22;
+            --bg-color: #1a1a1a;
+            --cell-bg: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .game-container {
+            width: 95%;
+            max-width: 900px;
+            background: #252525;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .scoreboard {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .team {
+            padding: 15px 30px;
+            border-radius: 15px;
+            width: 180px;
+            transition: all 0.4s ease;
+            opacity: 0.4;
+            border: 4px solid transparent;
+        }
+
+        .green { background-color: var(--green-color); }
+        .orange { background-color: var(--orange-color); }
+
+        .active-team {
+            opacity: 1;
+            transform: scale(1.1);
+            border-color: white;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .score { font-size: 3.5rem; font-weight: 900; margin-top: 10px; }
+
+        .question-section h1 {
+            font-size: 1.8rem;
+            color: #f1c40f;
+            margin-bottom: 25px;
+            min-height: 60px;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .answer-cell {
+            background-color: var(--cell-bg);
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            border: 2px solid #444;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .answer-text { 
+            visibility: hidden;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .extra-info {
+            visibility: hidden;
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        /* كشف الإجابة */
+        .revealed .answer-text, .revealed .extra-info { 
+            visibility: visible; 
+        }
+
+        .revealed-green { background-color: var(--green-color) !important; border-color: #fff; }
+        .revealed-orange { background-color: var(--orange-color) !important; border-color: #fff; }
+        .revealed-missed { background-color: #444 !important; color: #bbb; border: 2px dashed #666 !important; }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #answer-input {
+            padding: 15px;
+            width: 80%;
+            border-radius: 10px;
+            border: 2px solid #444;
+            background: #000;
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 25px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-main { background: #3498db; color: white; }
+        .btn-next { background: #9b59b6; color: white; }
+        .btn-reveal { background: #e74c3c; color: white; }
+
+        button:hover { filter: brightness(1.2); transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div class="scoreboard">
+            <div class="team green" id="green-box">
+                <h2>الأخضر</h2>
+                <div class="score" id="score-green">0</div>
+            </div>
+            <div style="font-size: 2rem; font-weight: bold; color: #555;">VS</div>
+            <div class="team orange" id="orange-box">
+                <h2>البرتقالي</h2>
+                <div class="score" id="score-orange">0</div>
+            </div>
+        </div>
+
+        <div class="question-section">
+            <h1 id="question-display">جاري التحميل...</h1>
+        </div>
+
+        <div class="answers-grid" id="grid"></div>
+
+        <div class="controls">
+            <input type="text" id="answer-input" placeholder="اكتب الإجابة هنا..." onkeypress="handleKeyPress(event)">
+            <div class="btn-group">
+                <button onclick="checkAnswer()" class="btn-main">إرسال</button>
+                <button onclick="nextQuestion()" class="btn-next">السؤال التالي ⮕</button>
+                <button onclick="revealAllAnswers()" id="reveal-btn" class="btn-reveal">كشف الإجابات 🔍</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // مصفوفة الأسئلة (ضع الـ 150 سؤال هنا)
+        const questions = [
+            {
+                q: "أشهر 10 هدافين في تاريخ الدوري السعودي",
+                a: [
+                    {k:["ماجد عبدالله"], i:"189 هدف", h:"الهداف التاريخي"},
+                    {k:["ناصر الشمراني"], i:"167 هدف", h:"الزلزال"},
+                    {k:["عمر السومة"], i:"144 هدف", h:"العقيد"},
+                    {k:["فهد الحمدان"], i:"120 هدف", h:"أسطورة الرياض"},
+                    {k:["ياسر القحطاني"], i:"112 هدف", h:"القناص"},
+                    {k:["محمد السهلاوي"], i:"111 هدف", h:"نجم النصر"},
+                    {k:["سامي الجابر"], i:"101 هدف", h:"الذئب"},
+                    {k:["حمزة ادريس"], i:"96 هدف", h:"البرق"},
+                    {k:["عبيد الدوسري"], i:"91 هدف", h:"نجم الوحدة"},
+                    {k:["حمدالله"], i:"100+ هدف", h:"الساطر"}
+                ]
+            }
+        ];
+
+        let currentQ = -1;
+        let scores = { green: 0, orange: 0 };
+        let turn = 'green';
+
+        function init() {
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            currentQ++;
+            if (currentQ >= questions.length) {
+                alert("انتهت الأسئلة!");
+                currentQ = 0;
+            }
+
+            const data = questions[currentQ];
+            document.getElementById('question-display').innerText = data.q;
+            document.getElementById('answer-input').value = "";
+            document.getElementById('reveal-btn').style.display = "block";
+
+            const grid = document.getElementById('grid');
+            grid.innerHTML = "";
+
+            data.a.forEach((item, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'answer-cell';
+                cell.id = `ans-${index}`;
+                // نأخذ أول عنصر في k كاسم أساسي للعرض
+                const mainName = item.k[0]; 
+                cell.innerHTML = `
+                    <span class="answer-text">${mainName}</span>
+                    <span class="extra-info">${item.i}</span>
+                `;
+                grid.appendChild(cell);
+            });
+
+            updateUI();
+        }
+
+        function checkAnswer() {
+            const val = document.getElementById('answer-input').value.trim().toLowerCase();
+            if (!val) return;
+
+            const data = questions[currentQ];
+            let isRight = false;
+
+            data.a.forEach((item, index) => {
+                const cell = document.getElementById(`ans-${index}`);
+                if (!cell.classList.contains('revealed')) {
+                    // التحقق من وجود الكلمة في أي من الكلمات المفتاحية k
+                    if (item.k.some(key => val.includes(key.toLowerCase()))) {
+                        cell.classList.add('revealed');
+                        cell.classList.add(turn === 'green' ? 'revealed-green' : 'revealed-orange');
+                        scores[turn] += 10;
+                        isRight = true;
+                    }
+                }
+            });
+
+            if (isRight) {
+                document.getElementById('answer-input').value = "";
+                updateUI();
+            } else {
+                turn = (turn === 'green') ? 'orange' : 'green';
+                updateUI();
+                alert("إجابة خاطئة! انتقل الدور للفريق الآخر.");
+            }
+        }
+
+        function revealAllAnswers() {
+            const data = questions[currentQ];
+            data.a.forEach((item, index) => {
+                const cell = document.getElementById(`ans-${index}`);
+                if (!cell.classList.contains('revealed')) {
+                    cell.classList.add('revealed');
+                    cell.classList.add('revealed-missed');
+                }
+            });
+            document.getElementById('reveal-btn').style.display = "none";
+        }
+
+        function updateUI() {
+            document.getElementById('score-green').innerText = scores.green;
+            document.getElementById('score-orange').innerText = scores.orange;
+            document.getElementById('green-box').classList.toggle('active-team', turn === 'green');
+            document.getElementById('orange-box').classList.toggle('active-team', turn === 'orange');
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') checkAnswer();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
