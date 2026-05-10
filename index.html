@@ -3,267 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Top10 | توب10</title>
+    <title>Mans Games | مسابقة الفريقين</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --accent: #e74c3c;
-            --success: #27ae60;
-            --light: #ecf0f1;
-            --gold: #f1c40f;
+            --primary: #2c3e50; --secondary: #3498db; --accent: #e74c3c;
+            --success: #27ae60; --light: #ecf0f1; --gold: #f1c40f;
+            --team1-color: #2980b9; --team2-color: #c0392b;
         }
-
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            background-attachment: fixed;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: var(--primary);
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh;
         }
-
         #game-container {
-            background: rgba(255, 255, 255, 0.95);
-            width: 95%;
-            max-width: 800px;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            text-align: center;
+            background: white; width: 95%; max-width: 900px; padding: 25px;
+            border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center;
         }
+        .screen { display: none; }
+        .screen.active { display: block; }
 
-        h1 { font-weight: 900; color: var(--primary); margin-bottom: 10px; }
-        .category-badge { background: var(--secondary); color: white; padding: 5px 15px; border-radius: 50px; font-size: 0.9rem; }
-
-        #setup-screen, #game-screen, #result-screen { display: none; }
-        #setup-screen.active, #game-screen.active, #result-screen.active { display: block; }
-
+        /* الأزرار والفئات */
         .btn {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: 700;
-            transition: 0.3s;
-            margin: 10px;
+            background: var(--secondary); color: white; border: none;
+            padding: 12px 25px; border-radius: 10px; cursor: pointer;
+            font-size: 1.1rem; font-weight: 700; transition: 0.3s; margin: 10px;
         }
-        .btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .btn-hint { background: var(--gold); color: #333; }
-
-        #question-text { font-size: 1.5rem; margin: 25px 0; color: #333; line-height: 1.6; }
-
-        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        input[type="text"] {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            outline: none;
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .cat-card {
+            display: inline-block; width: 140px; padding: 15px; margin: 10px;
+            border: 3px solid #eee; border-radius: 15px; cursor: pointer; transition: 0.3s;
         }
+        .cat-card.selected { border-color: var(--success); background: #e8f5e9; }
+        .cat-card span { font-size: 2.5rem; display: block; }
 
-        .answers-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 20px;
-        }
+        /* واجهة اللعبة */
+        .game-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .team-box { padding: 10px; border-radius: 10px; width: 45%; color: white; }
+        .team1-box { background: var(--team1-color); }
+        .team2-box { background: var(--team2-color); }
+        .active-turn { border: 4px solid var(--gold); transform: scale(1.05); }
 
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
         .answer-slot {
-            background: #f8f9fa;
-            border: 2px dashed #ccc;
-            padding: 15px;
-            border-radius: 10px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-weight: 700;
-            transition: 0.5s;
+            background: #f8f9fa; border: 2px dashed #ccc; padding: 12px;
+            border-radius: 10px; height: 65px; display: flex; align-items: center;
+            justify-content: space-between; font-weight: 700;
         }
+        .answer-slot.revealed { border-style: solid; border-color: var(--success); background: #e8f5e9; }
 
-        .answer-slot.revealed {
-            border-style: solid;
-            border-color: var(--success);
-            background: #e8f5e9;
-            animation: pop 0.3s ease-out;
-        }
-
-        @keyframes pop {
-            0% { transform: scale(0.8); }
-            80% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .info-text { font-size: 0.8rem; color: #7f8c8d; font-weight: 400; }
-        #hint-box { color: var(--accent); font-style: italic; margin-top: 10px; min-height: 24px; }
-
-        .score-board { display: flex; justify-content: space-around; margin-bottom: 20px; background: #eee; padding: 10px; border-radius: 10px; }
-
-        @media (max-width: 600px) {
-            .answers-grid { grid-template-columns: 1fr; }
-            #question-text { font-size: 1.2rem; }
-        }
+        /* التلميح */
+        .hint-section { background: #fff3e0; padding: 15px; border-radius: 10px; margin: 15px 0; border: 1px solid #ffe0b2; }
+        .hint-controls { display: flex; justify-content: center; gap: 10px; align-items: center; }
+        input[type="number"] { width: 60px; padding: 8px; border-radius: 5px; border: 1px solid #ddd; }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <div id="setup-screen" class="active">
-        <h1>🎮 MANS GAMES</h1>
-        <p>اختر الفئة التي تريد اللعب بها:</p>
-        <div id="categories">
-            <button class="btn" onclick="startGame('السعودية')">المملكة العربية السعودية</button>
-            <button class="btn" onclick="startGame('اختراعات')">اختراعات</button>
-            <button class="btn" onclick="startGame('آثار')">آثار ومعالم</button>
-            <button class="btn" onclick="startGame('حيوانات')">عالم الحيوان</button>
-            <button class="btn" onclick="startGame('جسم الإنسان')">جسم الإنسان</button>
+    <div id="screen-teams" class="screen active">
+        <h1>🎮 Mans Games</h1>
+        <div style="margin: 20px 0;">
+            <input type="text" id="t1-name" placeholder="اسم الفريق الأول" class="btn" style="background:white; color:#333; border:2px solid #2980b9">
+            <input type="text" id="t2-name" placeholder="اسم الفريق الثاني" class="btn" style="background:white; color:#333; border:2px solid #c0392b">
         </div>
+        <button class="btn" onclick="showIntro()">بدء المسابقة</button>
     </div>
 
-    <div id="game-screen">
-        <span class="category-badge" id="current-cat">السعودية</span>
-        <div class="score-board">
-            <div>النقاط: <span id="current-score">0</span></div>
-            <div>المتبقي: <span id="rem-answers">10</span></div>
+    <div id="screen-intro" class="screen">
+        <h2>شرح اللعبة 💡</h2>
+        <div style="text-align: right; padding: 20px; line-height: 1.8;">
+            <p>• المسابقة تعتمد على تخمين الـ 10 الأوائل في كل سؤال.</p>
+            <p>• يجب اختيار <b>4 فئات</b> من أصل 6 للعب.</p>
+            <p>• لكل فريق <b>تلميح واحد فقط</b> في كل سؤال.</p>
+            <p>• يتم طلب التلميح برقم المركز (من 1 إلى 10).</p>
         </div>
-        
-        <div id="question-text">تحميل السؤال...</div>
-        
-        <div class="input-group">
-            <input type="text" id="user-input" placeholder="اكتب إجابتك هنا..." autocomplete="off">
+        <button class="btn" onclick="showCategories()">فهمت، اختر الفئات</button>
+    </div>
+
+    <div id="screen-categories" class="screen">
+        <h2>اختر 4 فئات للبدء 🏷️</h2>
+        <div id="cat-list">
+            <div class="cat-card" onclick="toggleCat(this, 'السعودية')"><span>🇸🇦</span>السعودية</div>
+            <div class="cat-card" onclick="toggleCat(this, 'اختراعات')"><span>💡</span>اختراعات</div>
+            <div class="cat-card" onclick="toggleCat(this, 'آثار')"><span>🏺</span>آثار</div>
+            <div class="cat-card" onclick="toggleCat(this, 'حيوانات')"><span>🐾</span>حيوانات</div>
+            <div class="cat-card" onclick="toggleCat(this, 'جسم الإنسان')"><span>🧠</span>جسم الإنسان</div>
+            <div class="cat-card" onclick="toggleCat(this, 'كرة قدم')"><span>⚽</span>كرة قدم</div>
+        </div>
+        <p id="cat-count">تم اختيار: 0 / 4</p>
+        <button id="start-game-btn" class="btn" disabled onclick="initGame()">بدء اللعب!</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div class="game-header">
+            <div id="box-t1" class="team-box team1-box">
+                <h3 id="disp-t1">الفريق 1</h3>
+                <h2 id="score-t1">0</h2>
+                <small id="hint-t1">تلميح متاح ✅</small>
+            </div>
+            <div id="box-t2" class="team-box team2-box">
+                <h3 id="disp-t2">الفريق 2</h3>
+                <h2 id="score-t2">0</h2>
+                <small id="hint-t2">تلميح متاح ✅</small>
+            </div>
+        </div>
+
+        <h3 id="question-text">تحميل السؤال...</h3>
+
+        <div class="hint-section">
+            <div class="hint-controls">
+                <span>تلميح للمركز:</span>
+                <input type="number" id="hint-num" min="1" max="10" value="10">
+                <button class="btn btn-hint" onclick="requestHint()">💡 طلب تلميح</button>
+            </div>
+            <div id="hint-display" style="margin-top:10px; font-weight:bold; color:var(--accent)"></div>
+        </div>
+
+        <div style="margin: 20px 0;">
+            <input type="text" id="user-input" placeholder="اكتب الإجابة..." class="btn" style="background:white; color:#333; border:2px solid #ddd; width:60%">
             <button class="btn" onclick="checkAnswer()">إرسال</button>
         </div>
-        
-        <button class="btn btn-hint" onclick="showHint()">💡 تلميح (خصم نقطة)</button>
-        <div id="hint-box"></div>
 
-        <div class="answers-grid" id="answers-grid">
-            </div>
-    </div>
-
-    <div id="result-screen">
-        <h2>انتهت الجولة!</h2>
-        <h1 id="final-score">0</h1>
-        <p>نقطة</p>
-        <button class="btn" onclick="location.reload()">اللعب مرة أخرى</button>
+        <div class="answers-grid" id="answers-grid"></div>
+        <button class="btn" style="margin-top:20px; background:#95a5a6" onclick="nextQuestion()">السؤال التالي ⬅️</button>
     </div>
 </div>
 
 <script>
-    let allQuestions = [];
-    let currentQuestion = null;
-    let score = 0;
-    let revealedCount = 0;
-    let hintsShown = 0;
+    let allData = [];
+    let selectedCats = [];
+    let gameQuestions = [];
+    let currentQ = null;
+    let t1 = { name: "", score: 0, hintUsed: false };
+    let t2 = { name: "", score: 0, hintUsed: false };
+    let turn = 1; // 1 = Team 1, 2 = Team 2
 
-    // تحميل ملف JSON
     async function loadData() {
-        try {
-            const response = await fetch('questions.json');
-            allQuestions = await response.json();
-        } catch (e) {
-            alert('خطأ في تحميل ملف الأسئلة. تأكد من وجود ملف questions.json في نفس المجلد');
+        const res = await fetch('questions.json');
+        allData = await res.json();
+    }
+
+    function showIntro() {
+        t1.name = document.getElementById('t1-name').value || "الفريق 1";
+        t2.name = document.getElementById('t2-name').value || "الفريق 2";
+        document.getElementById('screen-teams').classList.remove('active');
+        document.getElementById('screen-intro').classList.add('active');
+    }
+
+    function showCategories() {
+        document.getElementById('screen-intro').classList.remove('active');
+        document.getElementById('screen-categories').classList.add('active');
+    }
+
+    function toggleCat(el, cat) {
+        if (selectedCats.includes(cat)) {
+            selectedCats = selectedCats.filter(c => c !== cat);
+            el.classList.remove('selected');
+        } else if (selectedCats.length < 4) {
+            selectedCats.push(cat);
+            el.classList.add('selected');
         }
+        document.getElementById('cat-count').innerText = `تم اختيار: ${selectedCats.length} / 4`;
+        document.getElementById('start-game-btn').disabled = (selectedCats.length !== 4);
     }
 
-    function startGame(category) {
-        const filtered = allQuestions.filter(q => q.category === category);
-        if(filtered.length === 0) return alert('لا توجد أسئلة لهذه الفئة حالياً');
+    function initGame() {
+        gameQuestions = allData.filter(q => selectedCats.includes(q.category));
+        // خلط الأسئلة
+        gameQuestions.sort(() => Math.random() - 0.5);
         
-        currentQuestion = filtered[Math.floor(Math.random() * filtered.length)];
+        document.getElementById('screen-categories').classList.remove('active');
+        document.getElementById('screen-game').classList.add('active');
+        document.getElementById('disp-t1').innerText = t1.name;
+        document.getElementById('disp-t2').innerText = t2.name;
         
-        document.getElementById('setup-screen').classList.remove('active');
-        document.getElementById('game-screen').classList.add('active');
-        
-        setupBoard();
+        loadQuestion();
     }
 
-    function setupBoard() {
-        revealedCount = 0;
-        hintsShown = 0;
-        document.getElementById('current-cat').innerText = currentQuestion.category;
-        document.getElementById('question-text').innerText = currentQuestion.q;
-        document.getElementById('hint-box').innerText = "";
-        
+    function loadQuestion() {
+        if (gameQuestions.length === 0) return alert("انتهت الأسئلة!");
+        currentQ = gameQuestions.pop();
+        t1.hintUsed = false; t2.hintUsed = false;
+        updateUI();
+
+        document.getElementById('question-text').innerText = currentQ.q;
+        document.getElementById('hint-display').innerText = "";
         const grid = document.getElementById('answers-grid');
         grid.innerHTML = "";
-        
         for (let i = 1; i <= 10; i++) {
-            const div = document.createElement('div');
-            div.className = "answer-slot";
-            div.id = `slot-${i}`;
-            div.innerHTML = `<span>${i}</span>`;
-            grid.appendChild(div);
+            grid.innerHTML += `<div class="answer-slot" id="slot-${i}"><span>${i}</span></div>`;
         }
+    }
+
+    function requestHint() {
+        let activeTeam = (turn === 1) ? t1 : t2;
+        if (activeTeam.hintUsed) return alert("لقد استخدمت تلميحك لهذا السؤال!");
         
-        document.getElementById('user-input').focus();
+        const num = document.getElementById('hint-num').value;
+        const answer = currentQ.a.find(item => item.p == num);
+        
+        document.getElementById('hint-display').innerText = `تلميح المركز ${num}: ${answer.h}`;
+        activeTeam.hintUsed = true;
+        updateUI();
     }
 
     function checkAnswer() {
         const input = document.getElementById('user-input').value.trim();
-        if (!input) return;
-
         let found = false;
-        currentQuestion.a.forEach(item => {
+
+        currentQ.a.forEach(item => {
             const slot = document.getElementById(`slot-${item.p}`);
-            // التحقق من الإجابة (مقارنة مع الكلمات المفتاحية k)
             if (item.k.some(key => input.includes(key)) && !slot.classList.contains('revealed')) {
                 slot.classList.add('revealed');
-                slot.innerHTML = `
-                    <div>${item.k[0]} <br> <span class="info-text">${item.i}</span></div>
-                    <span>#${item.p}</span>
-                `;
-                score += (11 - item.p); // نقاط أكثر للمراكز الأولى
-                revealedCount++;
+                slot.innerHTML = `<div>${item.k[0]} <br><small>${item.i}</small></div><b>#${item.p}</b>`;
+                if (turn === 1) t1.score += (11 - item.p);
+                else t2.score += (11 - item.p);
                 found = true;
             }
         });
 
         if (found) {
-            document.getElementById('current-score').innerText = score;
-            document.getElementById('rem-answers').innerText = 10 - revealedCount;
-            if (revealedCount === 10) endGame();
+            updateUI();
+        } else {
+            turn = (turn === 1) ? 2 : 1;
+            updateUI();
         }
-        
         document.getElementById('user-input').value = "";
-        document.getElementById('user-input').focus();
     }
 
-    function showHint() {
-        if (hintsShown >= 10) return;
-        const nextHintIndex = hintsShown;
-        const hintText = currentQuestion.a[nextHintIndex].h;
-        document.getElementById('hint-box').innerText = `تلميح للمركز ${nextHintIndex + 1}: ${hintText}`;
-        score = Math.max(0, score - 1);
-        document.getElementById('current-score').innerText = score;
-        hintsShown++;
+    function updateUI() {
+        document.getElementById('score-t1').innerText = t1.score;
+        document.getElementById('score-t2').innerText = t2.score;
+        document.getElementById('hint-t1').innerText = t1.hintUsed ? "تم الاستخدام ❌" : "تلميح متاح ✅";
+        document.getElementById('hint-t2').innerText = t2.hintUsed ? "تم الاستخدام ❌" : "تلميح متاح ✅";
+        
+        document.getElementById('box-t1').className = `team-box team1-box ${turn === 1 ? 'active-turn' : ''}`;
+        document.getElementById('box-t2').className = `team-box team2-box ${turn === 2 ? 'active-turn' : ''}`;
     }
 
-    function endGame() {
-        setTimeout(() => {
-            document.getElementById('game-screen').classList.remove('active');
-            document.getElementById('result-screen').classList.add('active');
-            document.getElementById('final-score').innerText = score;
-        }, 1500);
-    }
-
-    // تشغيل التحقق عند ضغط Enter
-    document.getElementById('user-input').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') checkAnswer();
-    });
+    function nextQuestion() { loadQuestion(); }
 
     loadData();
 </script>
-
 </body>
 </html>
