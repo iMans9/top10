@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mans Games Luxury | فخامة المنافسة</title>
+    <title>توب10 | Top10</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
@@ -32,6 +32,7 @@
             padding: 40px; border-radius: 30px;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
             text-align: center;
+            position: relative;
         }
 
         .screen { display: none; }
@@ -67,15 +68,36 @@
         .answers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .answer-slot {
             background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
-            padding: 15px; border-radius: 12px; height: 75px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; font-weight: 900; color: rgba(255,255,255,0.1);
-            transition: 0.8s ease;
+            padding: 15px; border-radius: 12px; height: 85px;
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 1.8rem; font-weight: 900; color: white;
+            transition: 0.8s ease; position: relative;
         }
+        .answer-slot .slot-num { opacity: 0.2; font-size: 2rem; }
+        
         .answer-slot.revealed {
             background: linear-gradient(45deg, #1e3c72, #2a5298);
-            color: white; border-color: var(--gold); transform: rotateX(360deg);
-            justify-content: space-between; font-size: 1.1rem;
+            border-color: var(--gold); transform: rotateX(360deg);
+            font-size: 1.1rem;
+        }
+
+        .btn-hint-small {
+            background: var(--gold); border: none; border-radius: 50%;
+            width: 35px; height: 35px; cursor: pointer; font-size: 1.2rem;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        /* النافذة المنبثقة للتلميح */
+        #hint-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+            z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: var(--bg-gradient); padding: 40px; border-radius: 30px;
+            border: 2px solid var(--gold); text-align: center; max-width: 500px; width: 90%;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
         }
 
         #feedback-area { height: 50px; margin: 15px 0; font-size: 1.4rem; font-weight: bold; }
@@ -86,18 +108,24 @@
             background: white; color: #222; border: none; padding: 15px 25px;
             border-radius: 50px; width: 65%; font-size: 1.2rem; font-weight: bold; outline: none;
         }
-
-        .hint-controls { background: rgba(255,215,0,0.1); padding: 10px; border-radius: 15px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
+<div id="hint-modal" class="animate__animated animate__fadeIn">
+    <div class="modal-content animate__animated animate__zoomIn">
+        <h2 style="color: var(--gold);">💡 تلميح للمركز <span id="modal-pos"></span></h2>
+        <p id="modal-text" style="font-size: 1.5rem; margin: 30px 0; line-height: 1.6;"></p>
+        <button class="btn" style="background: var(--team2-color);" onclick="closeHint()">إغلاق</button>
+    </div>
+</div>
+
 <div id="game-container" class="animate__animated animate__fadeIn">
     <div id="screen-teams" class="screen active">
-        <h1>MANS GAMES</h1>
+        <h1><img src="https://raw.githubusercontent.com/iMans9/top10/refs/heads/main/top10.png" alt="Logo" style="width: 400px; height: 300px;"></h1>
         <div style="margin: 30px 0;">
-            <input type="text" id="t1-name" placeholder="الفريق الأول 🔵">
-            <input type="text" id="t2-name" placeholder="الفريق الثاني 🔴" style="margin-top:15px;">
+            <input type="text" id="t1-name" placeholder="الفريق الأول ">
+            <input type="text" id="t2-name" placeholder="الفريق الثاني " style="margin-top:15px;">
         </div>
         <button class="btn" onclick="showIntro()">دخول الميدان ⚔️</button>
     </div>
@@ -108,7 +136,7 @@
             🚀 الدور ينتقل بعد كل محاولة (صح أو خطأ).<br>
             🎯 <b>النقاط:</b> المركز الأول (1) نقطة .. المركز العاشر (10) نقاط.<br>
             ⌨️ <b>مرونة الكتابة:</b> لا تشيل هم الهمزات أو الياء، بنفهمك!<br>
-            💡 <b>التلميح:</b> يحق لكل فريق تلميح واحد فقط لكل سؤال.
+            💡 <b>التلميح:</b> اضغط على المصباح بجانب أي مركز، ويحق لكل فريق تلميح واحد فقط.
         </div>
         <button class="btn" onclick="showCategories()">اختيار الفئات 🏷️</button>
     </div>
@@ -116,7 +144,7 @@
     <div id="screen-categories" class="screen">
         <h2>اختر 4 فئات (إجباري) 🗂️</h2>
         <div id="cat-list">
-            <div class="cat-card" onclick="toggleCat(this, 'السعودية')"><span>🇸🇦</span>السعودية</div>
+            <div class="cat-card" onclick="toggleCat(this, 'السعودية')"><span><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Flag_of_Saudi_Arabia.svg/330px-Flag_of_Saudi_Arabia.svg.png" alt="Flag" style="width: 70px; height: 50px;"></span>السعودية</div>
             <div class="cat-card" onclick="toggleCat(this, 'اختراعات')"><span>💡</span>اختراعات</div>
             <div class="cat-card" onclick="toggleCat(this, 'آثار')"><span>🏺</span>آثار</div>
             <div class="cat-card" onclick="toggleCat(this, 'حيوانات')"><span>🐾</span>حيوانات</div>
@@ -149,13 +177,6 @@
             <button class="btn" onclick="checkAnswer()">إرسال 📩</button>
         </div>
 
-        <div class="hint-controls">
-            <span>تلميح مركز: </span>
-            <input type="number" id="hint-num" min="1" max="10" value="1" style="width: 50px; padding: 5px; border-radius: 8px; border:none; text-align:center;">
-            <button class="btn" style="padding: 5px 15px; font-size: 0.9rem; background: var(--gold); color: black;" onclick="getHint()">💡 اظهر التلميح</button>
-            <p id="hint-text" style="color: #00ffcc; font-size: 0.9rem; margin-top: 5px;"></p>
-        </div>
-
         <div class="answers-grid" id="answers-grid"></div>
         <button class="btn" style="margin-top:25px; background: #444;" onclick="nextQuestion()">تجاوز السؤال ⏭️</button>
     </div>
@@ -175,14 +196,13 @@
         allQuestions = await r.json();
     }
 
-    // تنظيف النص (إزالة الهمزات وتوحيد الياء)
     function cleanText(text) {
         if (!text) return "";
-        return text.trim()
+        return text.trim().toLowerCase()
             .replace(/[أإآ]/g, 'ا')
             .replace(/[ئى]/g, 'ي')
             .replace(/ة/g, 'ه')
-            .replace(/\s+/g, ''); // إزالة المسافات للبحث الجزئي الدقيق
+            .replace(/\s+/g, '');
     }
 
     function showIntro() {
@@ -216,15 +236,35 @@
         currentQ = myQueue.pop();
         team1.hintUsed = false; team2.hintUsed = false;
         document.getElementById('question-text').innerText = currentQ.q;
-        document.getElementById('hint-text').innerText = "";
         document.getElementById('feedback-area').innerHTML = "";
         
         const grid = document.getElementById('answers-grid');
         grid.innerHTML = "";
         for (let i = 1; i <= 10; i++) {
-            grid.innerHTML += `<div class="answer-slot" id="slot-${i}">${i}</div>`;
+            grid.innerHTML += `
+                <div class="answer-slot" id="slot-${i}">
+                    <span class="slot-num">${i}</span>
+                    <button class="btn-hint-small" onclick="getHint(${i})">💡</button>
+                </div>`;
         }
         updateUI();
+    }
+
+    function getHint(pos) {
+        let activeTeam = (turn === 1) ? team1 : team2;
+        if (activeTeam.hintUsed) return alert("هذا الفريق استخدم التلميح مسبقاً لهذا السؤال!");
+        
+        const item = currentQ.a.find(a => a.p == pos);
+        document.getElementById('modal-pos').innerText = pos;
+        document.getElementById('modal-text').innerText = item.h;
+        document.getElementById('hint-modal').style.display = 'flex';
+        
+        activeTeam.hintUsed = true;
+        updateUI();
+    }
+
+    function closeHint() {
+        document.getElementById('hint-modal').style.display = 'none';
     }
 
     function checkAnswer() {
@@ -233,7 +273,6 @@
 
         const fb = document.getElementById('feedback-area');
         fb.innerHTML = `<span class="searching">🔍 جاري فحص "${rawInput}"..</span>`;
-
         const cleanedInput = cleanText(rawInput);
 
         setTimeout(() => {
@@ -250,18 +289,14 @@
                     fb.innerHTML = `⚠️ مكرر! الإجابة موجودة فعلاً.`;
                 } else {
                     slot.classList.add('revealed');
-                    slot.innerHTML = `<div>${foundItem.k[0]}<br><small>${foundItem.i}</small></div> <b>${foundItem.p} ن</b>`;
-                    
-                    let points = foundItem.p; 
-                    if (turn === 1) team1.score += points; else team2.score += points;
-                    
-                    fb.innerHTML = `<span style="color:#00ffcc">✅ صح! فريق ${turn === 1 ? '1' : '2'} حصل على ${points} نقطة</span>`;
+                    slot.innerHTML = `<div>${foundItem.k[0]}<br><small>${foundItem.i}</small></div> <b>${foundItem.p} نقطة ✨</b>`;
+                    if (turn === 1) team1.score += foundItem.p; else team2.score += foundItem.p;
+                    fb.innerHTML = `<span style="color:#00ffcc">✅ صح! حصلتم على ${foundItem.p} نقطة</span>`;
                 }
             } else {
                 fb.innerHTML = `<span style="color:var(--team2-color)">❌ خطأ! للأسف ليست ضمن القائمة.</span>`;
             }
             
-            // انتقال الدور إجبارياً بعد كل محاولة
             turn = (turn === 1) ? 2 : 1;
             updateUI();
             document.getElementById('user-input').value = "";
@@ -269,23 +304,11 @@
         }, 800);
     }
 
-    function getHint() {
-        let activeTeam = (turn === 1) ? team1 : team2;
-        if (activeTeam.hintUsed) return alert("استخدمت تلميحك لهذا السؤال!");
-        
-        const num = document.getElementById('hint-num').value;
-        const item = currentQ.a.find(a => a.p == num);
-        document.getElementById('hint-text').innerText = `💡 تلميح للمركز ${num}: ${item.h}`;
-        activeTeam.hintUsed = true;
-        updateUI();
-    }
-
     function updateUI() {
         document.getElementById('score-t1').innerText = team1.score;
         document.getElementById('score-t2').innerText = team2.score;
-        document.getElementById('hint-status-t1').innerText = team1.hintUsed ? "❌ مستخدم" : "✅ تلميح";
-        document.getElementById('hint-status-t2').innerText = team2.hintUsed ? "❌ مستخدم" : "✅ تلميح";
-        
+        document.getElementById('hint-status-t1').innerText = team1.hintUsed ? "❌ مستخدم" : "✅ متاح";
+        document.getElementById('hint-status-t2').innerText = team2.hintUsed ? "❌ مستخدم" : "✅ متاح";
         document.getElementById('box-t1').className = `team-box team1-box ${turn === 1 ? 'active-turn' : ''}`;
         document.getElementById('box-t2').className = `team-box team2-box ${turn === 2 ? 'active-turn' : ''}`;
     }
@@ -296,7 +319,6 @@
     }
 
     function nextQuestion() { loadQuestion(); }
-
     loadData();
 </script>
 </body>
