@@ -3,87 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mans Games | مسابقة الفريقين</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Mans Games Luxury | فخامة المنافسة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         :root {
-            --primary: #2c3e50; --secondary: #3498db; --accent: #e74c3c;
-            --success: #27ae60; --light: #ecf0f1; --gold: #f1c40f;
-            --team1-color: #2980b9; --team2-color: #c0392b;
+            --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            --team1-color: #00d2ff;
+            --team2-color: #ff416c;
+            --gold: #ffd700;
+            --glass: rgba(255, 255, 255, 0.1);
         }
+
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+
         body {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            background: var(--bg-gradient);
+            margin: 0; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow-x: hidden; color: white;
         }
+
+        /* حاوية الزجاج - Glassmorphism */
         #game-container {
-            background: white; width: 95%; max-width: 900px; padding: 25px;
-            border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 95%; max-width: 1000px;
+            padding: 40px; border-radius: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            position: relative;
         }
+
         .screen { display: none; }
         .screen.active { display: block; }
 
-        /* الأزرار والفئات */
+        h1 { font-family: 'Orbitron', sans-serif; font-size: 3rem; text-shadow: 0 0 20px var(--team1-color); margin-bottom: 30px; }
+
+        /* الأزرار الفخمة */
         .btn {
-            background: var(--secondary); color: white; border: none;
-            padding: 12px 25px; border-radius: 10px; cursor: pointer;
-            font-size: 1.1rem; font-weight: 700; transition: 0.3s; margin: 10px;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white; border: none; padding: 15px 35px;
+            border-radius: 50px; cursor: pointer; font-size: 1.2rem;
+            font-weight: 900; transition: 0.4s; margin: 10px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            text-transform: uppercase;
         }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
-        
+        .btn:hover { transform: scale(1.1) rotate(2deg); box-shadow: 0 15px 25px rgba(52, 152, 219, 0.4); }
+        .btn:disabled { background: #555; transform: none; box-shadow: none; cursor: not-allowed; }
+
+        /* بطاقات الفئات 3D */
         .cat-card {
-            display: inline-block; width: 140px; padding: 15px; margin: 10px;
-            border: 3px solid #eee; border-radius: 15px; cursor: pointer; transition: 0.3s;
+            display: inline-block; width: 160px; padding: 25px 15px; margin: 15px;
+            background: var(--glass); border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 20px; cursor: pointer; transition: 0.4s;
+            perspective: 1000px;
         }
-        .cat-card.selected { border-color: var(--success); background: #e8f5e9; }
-        .cat-card span { font-size: 2.5rem; display: block; }
+        .cat-card:hover { transform: translateY(-10px) rotateY(10deg); background: rgba(255,255,255,0.2); border-color: var(--gold); }
+        .cat-card.selected { background: linear-gradient(45deg, #27ae60, #2ecc71); border-color: white; transform: scale(1.05); }
+        .cat-card span { font-size: 3.5rem; display: block; margin-bottom: 10px; }
 
-        /* واجهة اللعبة */
-        .game-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
-        .team-box { padding: 10px; border-radius: 10px; width: 45%; color: white; }
-        .team1-box { background: var(--team1-color); }
-        .team2-box { background: var(--team2-color); }
-        .active-turn { border: 4px solid var(--gold); transform: scale(1.05); }
+        /* لوحة الفريقين */
+        .game-header { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 30px; }
+        .team-box { 
+            flex: 1; padding: 20px; border-radius: 20px; transition: 0.5s;
+            position: relative; overflow: hidden; border: 2px solid transparent;
+        }
+        .team1-box { background: rgba(0, 210, 255, 0.15); border-color: var(--team1-color); }
+        .team2-box { background: rgba(255, 65, 108, 0.15); border-color: var(--team2-color); }
+        .active-turn { 
+            transform: scale(1.08); box-shadow: 0 0 30px rgba(255,215,0,0.5); 
+            border: 3px solid var(--gold); background: rgba(255,255,255,0.1);
+        }
 
-        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        /* شبكة الإجابات 3D */
+        .answers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
         .answer-slot {
-            background: #f8f9fa; border: 2px dashed #ccc; padding: 12px;
-            border-radius: 10px; height: 65px; display: flex; align-items: center;
-            justify-content: space-between; font-weight: 700;
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+            padding: 20px; border-radius: 15px; height: 80px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: 900; color: rgba(255,255,255,0.2);
+            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .answer-slot.revealed { border-style: solid; border-color: var(--success); background: #e8f5e9; }
+        .answer-slot.revealed {
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            color: white; border-color: var(--gold); transform: rotateX(360deg);
+            justify-content: space-between; font-size: 1.1rem;
+        }
 
-        /* التلميح */
-        .hint-section { background: #fff3e0; padding: 15px; border-radius: 10px; margin: 15px 0; border: 1px solid #ffe0b2; }
-        .hint-controls { display: flex; justify-content: center; gap: 10px; align-items: center; }
-        input[type="number"] { width: 60px; padding: 8px; border-radius: 5px; border: 1px solid #ddd; }
+        /* تأثير البحث والنتيجة */
+        #feedback-area { height: 60px; margin: 20px 0; font-size: 1.5rem; font-weight: bold; }
+        .searching { animation: pulse 1s infinite; color: var(--gold); }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        input[type="text"] {
+            background: rgba(255,255,255,0.9); color: #333;
+            border: none; padding: 15px 25px; border-radius: 50px;
+            width: 70%; font-size: 1.3rem; font-weight: bold; outline: none;
+        }
+
+        .hint-badge { background: var(--gold); color: black; padding: 2px 8px; border-radius: 5px; font-size: 0.7rem; }
     </style>
 </head>
 <body>
 
-<div id="game-container">
+<div id="game-container" class="animate__animated animate__zoomIn">
     <div id="screen-teams" class="screen active">
-        <h1>🎮 Mans Games</h1>
-        <div style="margin: 20px 0;">
-            <input type="text" id="t1-name" placeholder="اسم الفريق الأول" class="btn" style="background:white; color:#333; border:2px solid #2980b9">
-            <input type="text" id="t2-name" placeholder="اسم الفريق الثاني" class="btn" style="background:white; color:#333; border:2px solid #c0392b">
+        <h1>MANS GAMES</h1>
+        <p style="font-size: 1.2rem; color: #ddd;">أدخل أسماء المحاربين ⚔️</p>
+        <div style="margin: 30px 0;">
+            <input type="text" id="t1-name" placeholder="فريق الصقور" style="border: 3px solid var(--team1-color); margin: 10px;">
+            <input type="text" id="t2-name" placeholder="فريق النمور" style="border: 3px solid var(--team2-color); margin: 10px;">
         </div>
-        <button class="btn" onclick="showIntro()">بدء المسابقة</button>
+        <button class="btn" onclick="showIntro()">استمرار 🚀</button>
     </div>
 
     <div id="screen-intro" class="screen">
-        <h2>شرح اللعبة 💡</h2>
-        <div style="text-align: right; padding: 20px; line-height: 1.8;">
-            <p>• المسابقة تعتمد على تخمين الـ 10 الأوائل في كل سؤال.</p>
-            <p>• يجب اختيار <b>4 فئات</b> من أصل 6 للعب.</p>
-            <p>• لكل فريق <b>تلميح واحد فقط</b> في كل سؤال.</p>
-            <p>• يتم طلب التلميح برقم المركز (من 1 إلى 10).</p>
+        <h2 style="color: var(--gold);">كيف تلعب؟ 🤔</h2>
+        <div style="text-align: right; background: rgba(0,0,0,0.2); padding: 25px; border-radius: 20px; line-height: 2;">
+            ✨ خمن الإجابات العشرة لكل سؤال.<br>
+            📈 <b>نظام النقاط:</b> إجابة المركز الأول تعطي 1 نقطة، والمركز العاشر تعطي 10 نقاط!<br>
+            💡 <b>تلميح:</b> يحق لكل فريق تلميح واحد فقط في كل سؤال.<br>
+            🔄 <b>الأدوار:</b> إذا أخطأت، ينتقل الدور للفريق الآخر فوراً.
         </div>
-        <button class="btn" onclick="showCategories()">فهمت، اختر الفئات</button>
+        <button class="btn" onclick="showCategories()">جاهزون! اختر الفئات 🏷️</button>
     </div>
 
     <div id="screen-categories" class="screen">
-        <h2>اختر 4 فئات للبدء 🏷️</h2>
+        <h2>اختر 4 فئات إجباري 🗂️</h2>
         <div id="cat-list">
             <div class="cat-card" onclick="toggleCat(this, 'السعودية')"><span>🇸🇦</span>السعودية</div>
             <div class="cat-card" onclick="toggleCat(this, 'اختراعات')"><span>💡</span>اختراعات</div>
@@ -92,70 +139,67 @@
             <div class="cat-card" onclick="toggleCat(this, 'جسم الإنسان')"><span>🧠</span>جسم الإنسان</div>
             <div class="cat-card" onclick="toggleCat(this, 'كرة قدم')"><span>⚽</span>كرة قدم</div>
         </div>
-        <p id="cat-count">تم اختيار: 0 / 4</p>
-        <button id="start-game-btn" class="btn" disabled onclick="initGame()">بدء اللعب!</button>
+        <h3 id="cat-count">0 / 4</h3>
+        <button id="start-game-btn" class="btn" disabled onclick="initGame()">لنبدأ التحدي 🔥</button>
     </div>
 
     <div id="screen-game" class="screen">
         <div class="game-header">
             <div id="box-t1" class="team-box team1-box">
-                <h3 id="disp-t1">الفريق 1</h3>
-                <h2 id="score-t1">0</h2>
-                <small id="hint-t1">تلميح متاح ✅</small>
+                <h3 id="disp-t1">---</h3>
+                <h2 id="score-t1" style="font-size: 2.5rem;">0</h2>
+                <div id="hint-status-t1" class="hint-badge">تلميح متاح</div>
             </div>
             <div id="box-t2" class="team-box team2-box">
-                <h3 id="disp-t2">الفريق 2</h3>
-                <h2 id="score-t2">0</h2>
-                <small id="hint-t2">تلميح متاح ✅</small>
+                <h3 id="disp-t2">---</h3>
+                <h2 id="score-t2" style="font-size: 2.5rem;">0</h2>
+                <div id="hint-status-t2" class="hint-badge">تلميح متاح</div>
             </div>
         </div>
 
-        <h3 id="question-text">تحميل السؤال...</h3>
+        <h2 id="question-text" style="color: var(--gold); min-height: 80px;">---</h2>
 
-        <div class="hint-section">
-            <div class="hint-controls">
-                <span>تلميح للمركز:</span>
-                <input type="number" id="hint-num" min="1" max="10" value="10">
-                <button class="btn btn-hint" onclick="requestHint()">💡 طلب تلميح</button>
-            </div>
-            <div id="hint-display" style="margin-top:10px; font-weight:bold; color:var(--accent)"></div>
+        <div id="feedback-area"></div>
+
+        <div style="margin-bottom: 30px;">
+            <input type="text" id="user-input" placeholder="اكتب إجابتك هنا...">
+            <button class="btn" onclick="checkAnswer()">إرسال ✔️</button>
         </div>
 
-        <div style="margin: 20px 0;">
-            <input type="text" id="user-input" placeholder="اكتب الإجابة..." class="btn" style="background:white; color:#333; border:2px solid #ddd; width:60%">
-            <button class="btn" onclick="checkAnswer()">إرسال</button>
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin-bottom: 20px;">
+            <span>طلب تلميح للمركز: </span>
+            <input type="number" id="hint-num" min="1" max="10" value="1" style="width: 60px; padding: 5px; border-radius: 5px;">
+            <button class="btn" style="padding: 8px 20px; font-size: 0.9rem; background: var(--gold); color: black;" onclick="getHint()">💡 اظهر التلميح</button>
+            <p id="hint-text" style="color: var(--gold); font-weight: bold; margin-top: 10px;"></p>
         </div>
 
         <div class="answers-grid" id="answers-grid"></div>
-        <button class="btn" style="margin-top:20px; background:#95a5a6" onclick="nextQuestion()">السؤال التالي ⬅️</button>
+
+        <button class="btn" style="margin-top:30px; background: #555;" onclick="nextQuestion()">السؤال التالي ⏭️</button>
     </div>
 </div>
 
 <script>
-    let allData = [];
+    let allQuestions = [];
     let selectedCats = [];
-    let gameQuestions = [];
+    let myQueue = [];
     let currentQ = null;
-    let t1 = { name: "", score: 0, hintUsed: false };
-    let t2 = { name: "", score: 0, hintUsed: false };
-    let turn = 1; // 1 = Team 1, 2 = Team 2
+    let turn = 1; 
+    let team1 = { score: 0, hintUsed: false };
+    let team2 = { score: 0, hintUsed: false };
 
     async function loadData() {
-        const res = await fetch('questions.json');
-        allData = await res.json();
+        const r = await fetch('questions.json');
+        allQuestions = await r.json();
     }
 
     function showIntro() {
-        t1.name = document.getElementById('t1-name').value || "الفريق 1";
-        t2.name = document.getElementById('t2-name').value || "الفريق 2";
-        document.getElementById('screen-teams').classList.remove('active');
-        document.getElementById('screen-intro').classList.add('active');
+        document.getElementById('disp-t1').innerText = document.getElementById('t1-name').value || "الفريق 1";
+        document.getElementById('disp-t2').innerText = document.getElementById('t2-name').value || "الفريق 2";
+        changeScreen('screen-teams', 'screen-intro');
     }
 
-    function showCategories() {
-        document.getElementById('screen-intro').classList.remove('active');
-        document.getElementById('screen-categories').classList.add('active');
-    }
+    function showCategories() { changeScreen('screen-intro', 'screen-categories'); }
 
     function toggleCat(el, cat) {
         if (selectedCats.includes(cat)) {
@@ -165,82 +209,89 @@
             selectedCats.push(cat);
             el.classList.add('selected');
         }
-        document.getElementById('cat-count').innerText = `تم اختيار: ${selectedCats.length} / 4`;
+        document.getElementById('cat-count').innerText = `${selectedCats.length} / 4`;
         document.getElementById('start-game-btn').disabled = (selectedCats.length !== 4);
     }
 
     function initGame() {
-        gameQuestions = allData.filter(q => selectedCats.includes(q.category));
-        // خلط الأسئلة
-        gameQuestions.sort(() => Math.random() - 0.5);
-        
-        document.getElementById('screen-categories').classList.remove('active');
-        document.getElementById('screen-game').classList.add('active');
-        document.getElementById('disp-t1').innerText = t1.name;
-        document.getElementById('disp-t2').innerText = t2.name;
-        
+        myQueue = allQuestions.filter(q => selectedCats.includes(q.category)).sort(() => Math.random() - 0.5);
+        changeScreen('screen-categories', 'screen-game');
         loadQuestion();
     }
 
     function loadQuestion() {
-        if (gameQuestions.length === 0) return alert("انتهت الأسئلة!");
-        currentQ = gameQuestions.pop();
-        t1.hintUsed = false; t2.hintUsed = false;
-        updateUI();
-
+        if (myQueue.length === 0) return alert("بطل! خلصت كل الأسئلة.");
+        currentQ = myQueue.pop();
+        team1.hintUsed = false; team2.hintUsed = false;
         document.getElementById('question-text').innerText = currentQ.q;
-        document.getElementById('hint-display').innerText = "";
+        document.getElementById('hint-text').innerText = "";
+        document.getElementById('feedback-area').innerHTML = "";
+        
         const grid = document.getElementById('answers-grid');
         grid.innerHTML = "";
         for (let i = 1; i <= 10; i++) {
-            grid.innerHTML += `<div class="answer-slot" id="slot-${i}"><span>${i}</span></div>`;
+            grid.innerHTML += `<div class="answer-slot" id="slot-${i}">${i}</div>`;
         }
-    }
-
-    function requestHint() {
-        let activeTeam = (turn === 1) ? t1 : t2;
-        if (activeTeam.hintUsed) return alert("لقد استخدمت تلميحك لهذا السؤال!");
-        
-        const num = document.getElementById('hint-num').value;
-        const answer = currentQ.a.find(item => item.p == num);
-        
-        document.getElementById('hint-display').innerText = `تلميح المركز ${num}: ${answer.h}`;
-        activeTeam.hintUsed = true;
         updateUI();
     }
 
     function checkAnswer() {
-        const input = document.getElementById('user-input').value.trim();
-        let found = false;
+        const val = document.getElementById('user-input').value.trim();
+        if (!val) return;
 
-        currentQ.a.forEach(item => {
-            const slot = document.getElementById(`slot-${item.p}`);
-            if (item.k.some(key => input.includes(key)) && !slot.classList.contains('revealed')) {
-                slot.classList.add('revealed');
-                slot.innerHTML = `<div>${item.k[0]} <br><small>${item.i}</small></div><b>#${item.p}</b>`;
-                if (turn === 1) t1.score += (11 - item.p);
-                else t2.score += (11 - item.p);
-                found = true;
+        const fb = document.getElementById('feedback-area');
+        fb.innerHTML = `<span class="searching">جاري البحث عن "${val}".. 🔍</span>`;
+
+        setTimeout(() => {
+            let foundItem = currentQ.a.find(item => item.k.some(key => val.includes(key)));
+            
+            if (foundItem) {
+                const slot = document.getElementById(`slot-${foundItem.p}`);
+                if (slot.classList.contains('revealed')) {
+                    fb.innerHTML = `⚠️ الإجابة مكتشفة سابقاً!`;
+                } else {
+                    slot.classList.add('revealed');
+                    slot.innerHTML = `<div>${foundItem.k[0]}<br><small>${foundItem.i}</small></div> <b>${foundItem.p} نقطة ✨</b>`;
+                    
+                    let points = foundItem.p; // النظام الجديد: المركز 10 = 10 نقاط
+                    if (turn === 1) team1.score += points; else team2.score += points;
+                    
+                    fb.innerHTML = `<span style="color:var(--secondary)">صح! ✅ أحسنت (+${points} نقطة)</span>`;
+                    updateUI();
+                }
+            } else {
+                fb.innerHTML = `<span style="color:var(--team2-color)">خطأ! ❌ انتقل الدور</span>`;
+                turn = (turn === 1) ? 2 : 1;
+                updateUI();
             }
-        });
+            document.getElementById('user-input').value = "";
+        }, 800);
+    }
 
-        if (found) {
-            updateUI();
-        } else {
-            turn = (turn === 1) ? 2 : 1;
-            updateUI();
-        }
-        document.getElementById('user-input').value = "";
+    function getHint() {
+        let activeTeam = (turn === 1) ? team1 : team2;
+        if (activeTeam.hintUsed) return alert("استخدمت تلميحك مسبقاً في هذا السؤال!");
+        
+        const num = document.getElementById('hint-num').value;
+        const item = currentQ.a.find(a => a.p == num);
+        document.getElementById('hint-text').innerText = `💡 تلميح للمركز ${num}: ${item.h}`;
+        activeTeam.hintUsed = true;
+        updateUI();
     }
 
     function updateUI() {
-        document.getElementById('score-t1').innerText = t1.score;
-        document.getElementById('score-t2').innerText = t2.score;
-        document.getElementById('hint-t1').innerText = t1.hintUsed ? "تم الاستخدام ❌" : "تلميح متاح ✅";
-        document.getElementById('hint-t2').innerText = t2.hintUsed ? "تم الاستخدام ❌" : "تلميح متاح ✅";
+        document.getElementById('score-t1').innerText = team1.score;
+        document.getElementById('score-t2').innerText = team2.score;
+        document.getElementById('hint-status-t1').innerText = team1.hintUsed ? "❌ مستخدم" : "✅ تلميح متاح";
+        document.getElementById('hint-status-t2').innerText = team2.hintUsed ? "❌ مستخدم" : "✅ تلميح متاح";
         
         document.getElementById('box-t1').className = `team-box team1-box ${turn === 1 ? 'active-turn' : ''}`;
         document.getElementById('box-t2').className = `team-box team2-box ${turn === 2 ? 'active-turn' : ''}`;
+    }
+
+    function changeScreen(oldId, newId) {
+        document.getElementById(oldId).classList.remove('active');
+        document.getElementById(newId).classList.add('active');
     }
 
     function nextQuestion() { loadQuestion(); }
