@@ -21,69 +21,56 @@
             background: var(--bg-gradient);
             margin: 0; min-height: 100vh;
             display: flex; justify-content: center; align-items: center;
-            overflow-x: hidden; color: white;
+            overflow: hidden; color: white;
         }
 
-        /* حاوية الزجاج - Glassmorphism */
         #game-container {
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             width: 95%; max-width: 1000px;
             padding: 40px; border-radius: 30px;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            position: relative;
+            text-align: center;
         }
 
         .screen { display: none; }
         .screen.active { display: block; }
 
-        h1 { font-family: 'Orbitron', sans-serif; font-size: 3rem; text-shadow: 0 0 20px var(--team1-color); margin-bottom: 30px; }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: 3rem; text-shadow: 0 0 20px var(--team1-color); margin-bottom: 20px; }
 
-        /* الأزرار الفخمة */
         .btn {
             background: linear-gradient(45deg, #3498db, #2980b9);
             color: white; border: none; padding: 15px 35px;
             border-radius: 50px; cursor: pointer; font-size: 1.2rem;
             font-weight: 900; transition: 0.4s; margin: 10px;
             box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-            text-transform: uppercase;
         }
-        .btn:hover { transform: scale(1.1) rotate(2deg); box-shadow: 0 15px 25px rgba(52, 152, 219, 0.4); }
-        .btn:disabled { background: #555; transform: none; box-shadow: none; cursor: not-allowed; }
+        .btn:hover { transform: scale(1.05); filter: brightness(1.2); }
+        .btn:disabled { background: #555; cursor: not-allowed; opacity: 0.5; }
 
-        /* بطاقات الفئات 3D */
         .cat-card {
-            display: inline-block; width: 160px; padding: 25px 15px; margin: 15px;
+            display: inline-block; width: 140px; padding: 20px 10px; margin: 10px;
             background: var(--glass); border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 20px; cursor: pointer; transition: 0.4s;
-            perspective: 1000px;
+            border-radius: 20px; cursor: pointer; transition: 0.3s;
         }
-        .cat-card:hover { transform: translateY(-10px) rotateY(10deg); background: rgba(255,255,255,0.2); border-color: var(--gold); }
-        .cat-card.selected { background: linear-gradient(45deg, #27ae60, #2ecc71); border-color: white; transform: scale(1.05); }
-        .cat-card span { font-size: 3.5rem; display: block; margin-bottom: 10px; }
+        .cat-card.selected { background: linear-gradient(45deg, #27ae60, #2ecc71); border-color: white; }
+        .cat-card span { font-size: 3rem; display: block; }
 
-        /* لوحة الفريقين */
-        .game-header { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 30px; }
-        .team-box { 
-            flex: 1; padding: 20px; border-radius: 20px; transition: 0.5s;
-            position: relative; overflow: hidden; border: 2px solid transparent;
-        }
-        .team1-box { background: rgba(0, 210, 255, 0.15); border-color: var(--team1-color); }
-        .team2-box { background: rgba(255, 65, 108, 0.15); border-color: var(--team2-color); }
-        .active-turn { 
-            transform: scale(1.08); box-shadow: 0 0 30px rgba(255,215,0,0.5); 
-            border: 3px solid var(--gold); background: rgba(255,255,255,0.1);
-        }
+        .game-header { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 25px; }
+        .team-box { flex: 1; padding: 15px; border-radius: 20px; border: 3px solid transparent; transition: 0.5s; opacity: 0.6; }
+        .active-turn { opacity: 1; transform: scale(1.05); border-color: var(--gold); box-shadow: 0 0 25px var(--gold); background: rgba(255,255,255,0.1); }
+        
+        .team1-box { background: rgba(0, 210, 255, 0.1); }
+        .team2-box { background: rgba(255, 65, 108, 0.1); }
 
-        /* شبكة الإجابات 3D */
-        .answers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .answers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .answer-slot {
-            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-            padding: 20px; border-radius: 15px; height: 80px;
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px; border-radius: 12px; height: 75px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; font-weight: 900; color: rgba(255,255,255,0.2);
-            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 1.8rem; font-weight: 900; color: rgba(255,255,255,0.1);
+            transition: 0.8s ease;
         }
         .answer-slot.revealed {
             background: linear-gradient(45deg, #1e3c72, #2a5298);
@@ -91,46 +78,43 @@
             justify-content: space-between; font-size: 1.1rem;
         }
 
-        /* تأثير البحث والنتيجة */
-        #feedback-area { height: 60px; margin: 20px 0; font-size: 1.5rem; font-weight: bold; }
-        .searching { animation: pulse 1s infinite; color: var(--gold); }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        #feedback-area { height: 50px; margin: 15px 0; font-size: 1.4rem; font-weight: bold; }
+        .searching { animation: flash 1s infinite; color: var(--gold); }
+        @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         input[type="text"] {
-            background: rgba(255,255,255,0.9); color: #333;
-            border: none; padding: 15px 25px; border-radius: 50px;
-            width: 70%; font-size: 1.3rem; font-weight: bold; outline: none;
+            background: white; color: #222; border: none; padding: 15px 25px;
+            border-radius: 50px; width: 65%; font-size: 1.2rem; font-weight: bold; outline: none;
         }
 
-        .hint-badge { background: var(--gold); color: black; padding: 2px 8px; border-radius: 5px; font-size: 0.7rem; }
+        .hint-controls { background: rgba(255,215,0,0.1); padding: 10px; border-radius: 15px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-<div id="game-container" class="animate__animated animate__zoomIn">
+<div id="game-container" class="animate__animated animate__fadeIn">
     <div id="screen-teams" class="screen active">
         <h1>MANS GAMES</h1>
-        <p style="font-size: 1.2rem; color: #ddd;">أدخل أسماء المحاربين ⚔️</p>
         <div style="margin: 30px 0;">
-            <input type="text" id="t1-name" placeholder="فريق الصقور" style="border: 3px solid var(--team1-color); margin: 10px;">
-            <input type="text" id="t2-name" placeholder="فريق النمور" style="border: 3px solid var(--team2-color); margin: 10px;">
+            <input type="text" id="t1-name" placeholder="الفريق الأول 🔵">
+            <input type="text" id="t2-name" placeholder="الفريق الثاني 🔴" style="margin-top:15px;">
         </div>
-        <button class="btn" onclick="showIntro()">استمرار 🚀</button>
+        <button class="btn" onclick="showIntro()">دخول الميدان ⚔️</button>
     </div>
 
     <div id="screen-intro" class="screen">
-        <h2 style="color: var(--gold);">كيف تلعب؟ 🤔</h2>
-        <div style="text-align: right; background: rgba(0,0,0,0.2); padding: 25px; border-radius: 20px; line-height: 2;">
-            ✨ خمن الإجابات العشرة لكل سؤال.<br>
-            📈 <b>نظام النقاط:</b> إجابة المركز الأول تعطي 1 نقطة، والمركز العاشر تعطي 10 نقاط!<br>
-            💡 <b>تلميح:</b> يحق لكل فريق تلميح واحد فقط في كل سؤال.<br>
-            🔄 <b>الأدوار:</b> إذا أخطأت، ينتقل الدور للفريق الآخر فوراً.
+        <h2 style="color: var(--gold);">قواعد الاشتباك 📜</h2>
+        <div style="text-align: right; background: rgba(0,0,0,0.3); padding: 25px; border-radius: 20px; line-height: 2;">
+            🚀 الدور ينتقل بعد كل محاولة (صح أو خطأ).<br>
+            🎯 <b>النقاط:</b> المركز الأول (1) نقطة .. المركز العاشر (10) نقاط.<br>
+            ⌨️ <b>مرونة الكتابة:</b> لا تشيل هم الهمزات أو الياء، بنفهمك!<br>
+            💡 <b>التلميح:</b> يحق لكل فريق تلميح واحد فقط لكل سؤال.
         </div>
-        <button class="btn" onclick="showCategories()">جاهزون! اختر الفئات 🏷️</button>
+        <button class="btn" onclick="showCategories()">اختيار الفئات 🏷️</button>
     </div>
 
     <div id="screen-categories" class="screen">
-        <h2>اختر 4 فئات إجباري 🗂️</h2>
+        <h2>اختر 4 فئات (إجباري) 🗂️</h2>
         <div id="cat-list">
             <div class="cat-card" onclick="toggleCat(this, 'السعودية')"><span>🇸🇦</span>السعودية</div>
             <div class="cat-card" onclick="toggleCat(this, 'اختراعات')"><span>💡</span>اختراعات</div>
@@ -140,42 +124,40 @@
             <div class="cat-card" onclick="toggleCat(this, 'كرة قدم')"><span>⚽</span>كرة قدم</div>
         </div>
         <h3 id="cat-count">0 / 4</h3>
-        <button id="start-game-btn" class="btn" disabled onclick="initGame()">لنبدأ التحدي 🔥</button>
+        <button id="start-game-btn" class="btn" disabled onclick="initGame()">ابدأ التحدي 🔥</button>
     </div>
 
     <div id="screen-game" class="screen">
         <div class="game-header">
             <div id="box-t1" class="team-box team1-box">
                 <h3 id="disp-t1">---</h3>
-                <h2 id="score-t1" style="font-size: 2.5rem;">0</h2>
-                <div id="hint-status-t1" class="hint-badge">تلميح متاح</div>
+                <h2 id="score-t1">0</h2>
+                <small id="hint-status-t1">💡 متاح</small>
             </div>
             <div id="box-t2" class="team-box team2-box">
                 <h3 id="disp-t2">---</h3>
-                <h2 id="score-t2" style="font-size: 2.5rem;">0</h2>
-                <div id="hint-status-t2" class="hint-badge">تلميح متاح</div>
+                <h2 id="score-t2">0</h2>
+                <small id="hint-status-t2">💡 متاح</small>
             </div>
         </div>
 
-        <h2 id="question-text" style="color: var(--gold); min-height: 80px;">---</h2>
-
+        <h2 id="question-text" style="color: var(--gold); margin: 20px 0;">---</h2>
         <div id="feedback-area"></div>
 
-        <div style="margin-bottom: 30px;">
-            <input type="text" id="user-input" placeholder="اكتب إجابتك هنا...">
-            <button class="btn" onclick="checkAnswer()">إرسال ✔️</button>
+        <div style="margin-bottom: 20px;">
+            <input type="text" id="user-input" placeholder="أدخل توقعك...">
+            <button class="btn" onclick="checkAnswer()">إرسال 📩</button>
         </div>
 
-        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin-bottom: 20px;">
-            <span>طلب تلميح للمركز: </span>
-            <input type="number" id="hint-num" min="1" max="10" value="1" style="width: 60px; padding: 5px; border-radius: 5px;">
-            <button class="btn" style="padding: 8px 20px; font-size: 0.9rem; background: var(--gold); color: black;" onclick="getHint()">💡 اظهر التلميح</button>
-            <p id="hint-text" style="color: var(--gold); font-weight: bold; margin-top: 10px;"></p>
+        <div class="hint-controls">
+            <span>تلميح مركز: </span>
+            <input type="number" id="hint-num" min="1" max="10" value="1" style="width: 50px; padding: 5px; border-radius: 8px; border:none; text-align:center;">
+            <button class="btn" style="padding: 5px 15px; font-size: 0.9rem; background: var(--gold); color: black;" onclick="getHint()">💡 اظهر التلميح</button>
+            <p id="hint-text" style="color: #00ffcc; font-size: 0.9rem; margin-top: 5px;"></p>
         </div>
 
         <div class="answers-grid" id="answers-grid"></div>
-
-        <button class="btn" style="margin-top:30px; background: #555;" onclick="nextQuestion()">السؤال التالي ⏭️</button>
+        <button class="btn" style="margin-top:25px; background: #444;" onclick="nextQuestion()">تجاوز السؤال ⏭️</button>
     </div>
 </div>
 
@@ -191,6 +173,16 @@
     async function loadData() {
         const r = await fetch('questions.json');
         allQuestions = await r.json();
+    }
+
+    // تنظيف النص (إزالة الهمزات وتوحيد الياء)
+    function cleanText(text) {
+        if (!text) return "";
+        return text.trim()
+            .replace(/[أإآ]/g, 'ا')
+            .replace(/[ئى]/g, 'ي')
+            .replace(/ة/g, 'ه')
+            .replace(/\s+/g, ''); // إزالة المسافات للبحث الجزئي الدقيق
     }
 
     function showIntro() {
@@ -220,7 +212,7 @@
     }
 
     function loadQuestion() {
-        if (myQueue.length === 0) return alert("بطل! خلصت كل الأسئلة.");
+        if (myQueue.length === 0) return alert("انتهت جميع الأسئلة!");
         currentQ = myQueue.pop();
         team1.hintUsed = false; team2.hintUsed = false;
         document.getElementById('question-text').innerText = currentQ.q;
@@ -236,41 +228,50 @@
     }
 
     function checkAnswer() {
-        const val = document.getElementById('user-input').value.trim();
-        if (!val) return;
+        const rawInput = document.getElementById('user-input').value.trim();
+        if (!rawInput) return;
 
         const fb = document.getElementById('feedback-area');
-        fb.innerHTML = `<span class="searching">جاري البحث عن "${val}".. 🔍</span>`;
+        fb.innerHTML = `<span class="searching">🔍 جاري فحص "${rawInput}"..</span>`;
+
+        const cleanedInput = cleanText(rawInput);
 
         setTimeout(() => {
-            let foundItem = currentQ.a.find(item => item.k.some(key => val.includes(key)));
+            let foundItem = currentQ.a.find(item => 
+                item.k.some(key => {
+                    let cleanedKey = cleanText(key);
+                    return cleanedKey.includes(cleanedInput) || cleanedInput.includes(cleanedKey);
+                })
+            );
             
             if (foundItem) {
                 const slot = document.getElementById(`slot-${foundItem.p}`);
                 if (slot.classList.contains('revealed')) {
-                    fb.innerHTML = `⚠️ الإجابة مكتشفة سابقاً!`;
+                    fb.innerHTML = `⚠️ مكرر! الإجابة موجودة فعلاً.`;
                 } else {
                     slot.classList.add('revealed');
-                    slot.innerHTML = `<div>${foundItem.k[0]}<br><small>${foundItem.i}</small></div> <b>${foundItem.p} نقطة ✨</b>`;
+                    slot.innerHTML = `<div>${foundItem.k[0]}<br><small>${foundItem.i}</small></div> <b>${foundItem.p} ن</b>`;
                     
-                    let points = foundItem.p; // النظام الجديد: المركز 10 = 10 نقاط
+                    let points = foundItem.p; 
                     if (turn === 1) team1.score += points; else team2.score += points;
                     
-                    fb.innerHTML = `<span style="color:var(--secondary)">صح! ✅ أحسنت (+${points} نقطة)</span>`;
-                    updateUI();
+                    fb.innerHTML = `<span style="color:#00ffcc">✅ صح! فريق ${turn === 1 ? '1' : '2'} حصل على ${points} نقطة</span>`;
                 }
             } else {
-                fb.innerHTML = `<span style="color:var(--team2-color)">خطأ! ❌ انتقل الدور</span>`;
-                turn = (turn === 1) ? 2 : 1;
-                updateUI();
+                fb.innerHTML = `<span style="color:var(--team2-color)">❌ خطأ! للأسف ليست ضمن القائمة.</span>`;
             }
+            
+            // انتقال الدور إجبارياً بعد كل محاولة
+            turn = (turn === 1) ? 2 : 1;
+            updateUI();
             document.getElementById('user-input').value = "";
+            document.getElementById('user-input').focus();
         }, 800);
     }
 
     function getHint() {
         let activeTeam = (turn === 1) ? team1 : team2;
-        if (activeTeam.hintUsed) return alert("استخدمت تلميحك مسبقاً في هذا السؤال!");
+        if (activeTeam.hintUsed) return alert("استخدمت تلميحك لهذا السؤال!");
         
         const num = document.getElementById('hint-num').value;
         const item = currentQ.a.find(a => a.p == num);
@@ -282,16 +283,16 @@
     function updateUI() {
         document.getElementById('score-t1').innerText = team1.score;
         document.getElementById('score-t2').innerText = team2.score;
-        document.getElementById('hint-status-t1').innerText = team1.hintUsed ? "❌ مستخدم" : "✅ تلميح متاح";
-        document.getElementById('hint-status-t2').innerText = team2.hintUsed ? "❌ مستخدم" : "✅ تلميح متاح";
+        document.getElementById('hint-status-t1').innerText = team1.hintUsed ? "❌ مستخدم" : "✅ تلميح";
+        document.getElementById('hint-status-t2').innerText = team2.hintUsed ? "❌ مستخدم" : "✅ تلميح";
         
         document.getElementById('box-t1').className = `team-box team1-box ${turn === 1 ? 'active-turn' : ''}`;
         document.getElementById('box-t2').className = `team-box team2-box ${turn === 2 ? 'active-turn' : ''}`;
     }
 
     function changeScreen(oldId, newId) {
-        document.getElementById(oldId).classList.remove('active');
-        document.getElementById(newId).classList.add('active');
+        document.getElementById(oldId).style.display = 'none';
+        document.getElementById(newId).style.display = 'block';
     }
 
     function nextQuestion() { loadQuestion(); }
